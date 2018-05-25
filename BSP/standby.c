@@ -1,5 +1,12 @@
 #include <stm32f10x.h>
 
+#include <stm32f10x_rcc.h>
+#include <stm32f10x_gpio.h>
+#include <stm32f10x_pwr.h>
+#include <stm32f10x_exti.h>
+#include <misc.h>
+
+
 #include "standby.h"
 #include "bsp.h"
 #include "main.h"
@@ -100,7 +107,5 @@ void WKUP_Pin_Init(void)
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; 
   GPIO_Init(GPIOA, &GPIO_InitStructure);
 	
-
-
 }
 

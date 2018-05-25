@@ -177,6 +177,7 @@ int AT_CSQ(char *resp , int len)
 	int tmp;
 	if (strstr(resp,"OK"))
 	{
+		/*
 		char *h = strstr(resp,"+CSQ: ");
 		char *a = strstr(h,",");
 		
@@ -188,7 +189,7 @@ int AT_CSQ(char *resp , int len)
 		sscanf(h,"%d",&tmp);
 		
 		gsm_signal = tmp;
-		
+		*/
 		return AT_RESP_OK;
 	}
 	else{

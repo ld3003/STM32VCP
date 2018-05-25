@@ -30,13 +30,15 @@
 #define USBEN_RCC_TYPE		RCC_APB2PeriphClockCmd
 #define USBEN_RCC				RCC_APB2Periph_GPIOC
 #define USBEN_GPIO				GPIOC
-#define USBEN_PIN				GPIO_Pin_14
+#define USBEN_PIN				GPIO_Pin_13
 
 
 #define CHECK_USB_RCC_TYPE		RCC_APB2PeriphClockCmd
 #define CHECK_USB_RCC					RCC_APB2Periph_GPIOB
 #define CHECK_USB_GPIO				GPIOB
 #define CHECK_USB_PIN					GPIO_Pin_9
+
+void gpio_all_ain(void);
 
 void init_uart1(void);
 void init_uart2(void);

@@ -6,6 +6,11 @@
 #include <stm32f10x_adc.h>
 #include <stm32f10x_dma.h>
 #include <misc.h>
+
+void gpio_all_ain(void)
+{
+}
+
 /*******************************************************************************
 * Function Name  : USART_Configuration
 * Description    : Configure USART1 
@@ -68,7 +73,7 @@ void init_uart2(void)
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; 
   GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-  USART_InitStructure.USART_BaudRate = 115200;
+  USART_InitStructure.USART_BaudRate = 9600;
   USART_InitStructure.USART_WordLength = USART_WordLength_8b;
   USART_InitStructure.USART_StopBits = USART_StopBits_1;
   USART_InitStructure.USART_Parity = USART_Parity_No;
@@ -111,68 +116,16 @@ void uart2_putchar(unsigned char data)
 
 void modem_poweron(void)
 {
-	GPIO_InitTypeDef GPIO_InitStructure;
-
-  MODEM_POWER_RCC_TYPE( MODEM_POEWR_RCC , ENABLE); 						 
-  /**
-  *  LED1 -> PF6 , LED2 -> PF7 , LED3 -> PF8 , LED4 -> PF9
-  */					 
-  GPIO_InitStructure.GPIO_Pin =  MODEM_POEWR_PIN;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 
-  GPIO_Init(MODEM_POEWR_GPIO, &GPIO_InitStructure);
-	
-	GPIO_ResetBits(MODEM_POEWR_GPIO,MODEM_POEWR_PIN);
-	//
 }
 void modem_poweroff(void)
 {
-	GPIO_InitTypeDef GPIO_InitStructure;
-
-  MODEM_POWER_RCC_TYPE( MODEM_POEWR_RCC , ENABLE); 						 
-  /**
-  *  LED1 -> PF6 , LED2 -> PF7 , LED3 -> PF8 , LED4 -> PF9
-  */					 
-  GPIO_InitStructure.GPIO_Pin =  MODEM_POEWR_PIN;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN; 
-  GPIO_Init(MODEM_POEWR_GPIO, &GPIO_InitStructure);
-	
-	//GPIO_ResetBits(MODEM_POEWR_GPIO,MODEM_POEWR_PIN);
-	//
 }
 
 void ov_poweron(void)
 {
-	GPIO_InitTypeDef GPIO_InitStructure;
-
-  MODEM_POWER_RCC_TYPE( OV_POEWR_RCC , ENABLE); 						 
-  /**
-  *  LED1 -> PF6 , LED2 -> PF7 , LED3 -> PF8 , LED4 -> PF9
-  */					 
-  GPIO_InitStructure.GPIO_Pin =  OV_POEWR_PIN;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 
-  GPIO_Init(OV_POEWR_GPIO, &GPIO_InitStructure);
-	
-	GPIO_SetBits(OV_POEWR_GPIO,OV_POEWR_PIN);
-	//
 }
 void ov_poweroff(void)
 {
-	GPIO_InitTypeDef GPIO_InitStructure;
-
-  MODEM_POWER_RCC_TYPE( OV_POEWR_RCC , ENABLE); 						 
-  /**
-  *  LED1 -> PF6 , LED2 -> PF7 , LED3 -> PF8 , LED4 -> PF9
-  */					 
-  GPIO_InitStructure.GPIO_Pin =  OV_POEWR_PIN;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 
-  GPIO_Init(OV_POEWR_GPIO, &GPIO_InitStructure);
-	
-	GPIO_ResetBits(OV_POEWR_GPIO,OV_POEWR_PIN);
-	//
 }
 
 void led0_on(void)

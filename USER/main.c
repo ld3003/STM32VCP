@@ -49,19 +49,13 @@ int main(void)
 	
 	//设置APP已经进入启动
 	SET_BOOTLOADER_STATUS(2);
-	
 	WKUP_Pin_Init();
 	watch_dog_config();
 	init_utimer();
 	init_task();
 	mainloop_init();
-	
-	takephoto();
-	
 	init_mem();
-	
 	SET_SYSTEM_COUNTER;
-		
 	init_uart2_buffer();
 	
 	for(;;){feed_watchdog();mainloop();}
@@ -69,78 +63,7 @@ int main(void)
 	return 0;
 }
 
-static void takephoto(void)
-{
-	//摄像头拍照部分必须再程序一开始进行，因此进行特殊处理
-	//SET_SYSTEM_STATUS(SYSTEM_STATUS_TAKEPHOTH);
-	switch(GET_SYSTEM_STATUS)
-	{
-		case SYSTEM_STATUS_TAKEPHOTH:
-		{
-			int i = 0;
-			int initOV = -1;
-			int photolen = 0;
-			unsigned int takeTime;
-			
-			#define OV2640_REINIT_COUNT 3
-			
-			alloc_jpegbuffer();
-			ov_poweron();
-			_config_mco();
-			InitSCCB();
-			
-			for(i=1;i<=OV2640_REINIT_COUNT;i++)
-			{
-				ov_poweron();
-				initOV = ov2640_init();
-				if (initOV >=0 )
-					break;
-				printf("启动摄像头失败，重试 %d 次 \r\n",i);
-				ov_poweroff();
-				utimer_sleep(1000);
-			}
-			
-			if (initOV != 0)
-				goto endtakephoto;
-			
-			//等待5秒钟，让曝光完全
-			
-			disable_href_isr();
-			printf("wait ov2640 init ... \r\n");
-			utimer_sleep(8000);
-			printf("wait ov2640 init finish . \r\n");
-			
-			photolen = ov2640_read();
-			if (photolen > 0)
-			{
-				unsigned char *imgbuf;
-				
-				//标记摄像头可用
-				mdata.cam_ok = 1;
-				
-				//将图片写入
-				printf("写入flash\r\n");
-				__write_img_2_flash(0,JpegBuffer,photolen,0);
-				
-				//测试写入是否正确
-				imgbuf = read_imgbuffer(0,&photolen,&takeTime);
-				for(i=0;i<photolen;i++)
-				{
-					uart1_putchar(imgbuf[i]);
-					//
-				}
-			}
-			
-			endtakephoto:
-			
-			free_jpegbuffer();
-			ov_poweroff();
-			break;
-		}
-		
-	}
-	//
-}
+
 
 
 

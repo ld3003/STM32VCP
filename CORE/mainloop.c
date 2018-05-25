@@ -301,18 +301,7 @@ void mainloop(void)
 	{
 		case SYS_INIT:
 			status_master(mdata.status,60*1000);
-		
-			#if 0
-			IOI2C_Init();
-			init_mma845x();
-			mdata.doing = DOING_10A0;
-			mdata._10a0type = 1;
-			mdata.status = MODEM_POWEROFF;
-			#else
-			SYSINIT();
-			#endif
-			
-		
+			mdata.status = MODEM_POWERACTIVE;
 			break;
 		case SYS_POWEROFF:
 			
@@ -389,7 +378,7 @@ void mainloop(void)
 			status_master(mdata.status,60*1000);
 			
 			//通过向模块发送AT指令判断返回结果是否正确来判定模块是否已经正常启动了
-			ret = at_cmd_wait("ATE0\r\n",AT_AT,0,2000);
+			ret = at_cmd_wait("AT\r\n",AT_AT,0,2000);
 			
 			mdata.test_at_cnt ++;
 			
@@ -400,7 +389,8 @@ void mainloop(void)
 				//模块AT指令返回正确，认为模块已经正常启动，进入下一个状态
 				printf("模块开机成功,休眠5秒让模块初始化完成\r\n");
 				utimer_sleep(5000);
-				mdata.status = MODEM_GET_IMEI;
+				mdata.status = MODEM_CHECK_CSQ;
+				mdata.next_status = MODEM_CHECK_CSQ;
 				
 			}else{
 				
@@ -477,7 +467,8 @@ void mainloop(void)
 		{
 			int ret;
 			status_master(mdata.status,60*1000);
-			ret = at_cmd_wait("AT+CSQ\r\n",AT_CSQ,0,500);
+			for(;;)
+				ret = at_cmd_wait("AT+CSQ\r\n",AT_CSQ,0,500);
 			if (AT_RESP_OK == ret)
 			{
 				printf("当前信号质量 : %d\r\n",gsm_signal);
@@ -485,7 +476,7 @@ void mainloop(void)
 			}else{
 				if (mdata.status_running_cnt > 3)
 				{
-					mdata.status = MODEM_GPRS_ERROR;
+					mdata.status = MODEM_CHECK_CSQ;
 				}
 			}
 			
