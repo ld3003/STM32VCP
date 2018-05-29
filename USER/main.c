@@ -46,17 +46,17 @@ int main(void)
 	init_uart1();
 	init_uart2();
 	RTC_Init();
-	
-	//设置APP已经进入启动
 	SET_BOOTLOADER_STATUS(2);
 	WKUP_Pin_Init();
-	watch_dog_config();
+	
+	
 	init_utimer();
 	init_task();
 	mainloop_init();
 	init_mem();
-	SET_SYSTEM_COUNTER;
 	init_uart2_buffer();
+	
+	
 	
 	for(;;){feed_watchdog();mainloop();}
 	

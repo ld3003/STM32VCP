@@ -2,7 +2,7 @@
 #include "bsp.h"
 #include "common.h"
 #include "mem.h"
-
+#include "utimer.h"
 #include <string.h>
 
 char *uart2_rx_buffer;
@@ -19,3 +19,51 @@ void init_uart2_buffer(void)
 	uart2_rx_buffer = (char*)alloc_mem(__FILE__,__LINE__,UART2_RX_BUF_LEN);
 }
 
+//static int uart_data_read(char *buf, int maxrlen, int mode)
+int uart_data_read(char *buf, int maxrlen, int mode, int timeout)
+{
+	int timeo = 0;
+	int history_rx_len = 0;
+	
+	clear_uart2_buffer();
+	
+	
+	for(;;)
+	{
+		
+		utimer_sleep(20);
+		
+		if (uart2_rx_buffer_index > history_rx_len)
+		{
+			history_rx_len = uart2_rx_buffer_index;
+			timeo = 0;
+		}else{
+			timeo += 20;
+		}
+		
+		if (uart2_rx_buffer_index >= maxrlen)
+		{
+			memcpy(buf,uart2_rx_buffer,uart2_rx_buffer_index);
+			return uart2_rx_buffer_index;
+		}
+		
+		if (timeo >= timeout)
+		{
+			memcpy(buf,uart2_rx_buffer,uart2_rx_buffer_index);
+			return uart2_rx_buffer_index;
+		}
+		
+	}
+	
+	return 0;
+}
+//static int uart_data_write(const char *buf, int writelen, int mode)
+int uart_data_write(char *buf, int writelen, int mode)
+{
+	int i=0;
+	for(i=0;i<writelen;i++)
+	{
+		uart2_putchar(buf[i]);
+	}
+  return 0;
+}
