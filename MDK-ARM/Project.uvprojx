@@ -619,6 +619,11 @@
               <FileType>1</FileType>
               <FilePath>..\CORE\mqttlib.c</FilePath>
             </File>
+            <File>
+              <FileName>cbase64.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\CORE\BASE64\cbase64.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -678,6 +683,11 @@
               <FileName>wd.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\BSP\wd.c</FilePath>
+            </File>
+            <File>
+              <FileName>neul_bc95.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\BSP\BC95\neul_bc95.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -25,7 +25,7 @@ int uart_data_read(char *buf, int maxrlen, int mode, int timeout)
 	int timeo = 0;
 	int history_rx_len = 0;
 	
-	clear_uart2_buffer();
+	
 	
 	
 	for(;;)
@@ -39,28 +39,34 @@ int uart_data_read(char *buf, int maxrlen, int mode, int timeout)
 			timeo = 0;
 		}else{
 			timeo += 20;
+			timeout = 40;
 		}
 		
 		if (uart2_rx_buffer_index >= maxrlen)
 		{
 			memcpy(buf,uart2_rx_buffer,uart2_rx_buffer_index);
-			return uart2_rx_buffer_index;
+			goto ret;
 		}
 		
 		if (timeo >= timeout)
 		{
 			memcpy(buf,uart2_rx_buffer,uart2_rx_buffer_index);
-			return uart2_rx_buffer_index;
+			goto ret;
 		}
 		
 	}
 	
-	return 0;
+	ret:
+	printf("BC->ST : %s\r\n",buf);
+	return uart2_rx_buffer_index;
 }
 //static int uart_data_write(const char *buf, int writelen, int mode)
 int uart_data_write(char *buf, int writelen, int mode)
 {
 	int i=0;
+	
+	printf("ST->BC : %s\r\n",buf);
+	clear_uart2_buffer();
 	for(i=0;i<writelen;i++)
 	{
 		uart2_putchar(buf[i]);

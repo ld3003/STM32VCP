@@ -675,6 +675,8 @@ Revision    :
 =============================================================== */
 int neul_bc95_set_cdpserver(const char *ipaddr)
 {
+
+	#if 1
     char *cmd = "AT+NCDP=";
     char *cmd2 = "AT+NCDP?";
     char *str = NULL;
@@ -713,7 +715,7 @@ int neul_bc95_set_cdpserver(const char *ipaddr)
         return -1;
     }
     memset(neul_dev.rbuf, 0, 32);
-    ret = neul_dev.ops->dev_read(neul_dev.rbuf, 32, 0, 200);
+    ret = neul_dev.ops->dev_read(neul_dev.rbuf, 32, 0, 1000);
     if (ret <= 0)
     {
         //read bc95 read set return value info failed
@@ -724,7 +726,7 @@ int neul_bc95_set_cdpserver(const char *ipaddr)
     {
         return -1;
     }
-    
+    #endif
     return 0;
 }
 
@@ -1612,6 +1614,25 @@ int neul_bc95_prepare_transmit(void)
 int neul_bc95_sleep(int ticks)
 {
     return 0;
+}
+
+int neul_bc95_send_msg(void)
+{
+
+		
+		neul_dev.ops->dev_write("AT\r\n", strlen("AT\r\n"), 0);
+		neul_dev.ops->dev_read(neul_dev.rbuf, 32, 0, 200);
+		
+		neul_dev.ops->dev_write("AT+NCDP=180.101.147.115\r\n", strlen("AT+NCDP=180.101.147.115\r\n"), 0);
+		neul_dev.ops->dev_read(neul_dev.rbuf, 32, 0, 200);
+		
+		neul_dev.ops->dev_write("AT+NCDP?\r\n", strlen("AT+NCDP?\r\n"), 0);
+		neul_dev.ops->dev_read(neul_dev.rbuf, 32, 0, 200);
+		
+		neul_dev.ops->dev_write("AT+NMGS=2,0001\r\n", strlen("AT+NMGS=2,0001\r\n"), 0);
+		neul_dev.ops->dev_read(neul_dev.rbuf, 32, 0, 5000);
+		
+
 }
 
 //AT+NTSETID=1,460012345678966

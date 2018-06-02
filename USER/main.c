@@ -24,6 +24,8 @@
 
 #include "main.h"
 #include "ov2640api.h"
+#include "BC95/neul_bc95.h"
+#include "BASE64/cbase64.h"
 
 static void takephoto(void);
 
@@ -42,7 +44,7 @@ int main(void)
 	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable,ENABLE);
 	
 	SysTick_Config(SystemCoreClock / 100);
-	watch_dog_config();
+	
 	init_uart1();
 	init_uart2();
 	RTC_Init();
@@ -55,6 +57,40 @@ int main(void)
 	mainloop_init();
 	init_mem();
 	init_uart2_buffer();
+	
+	//neul_bc95_reboot();																	//初始化模块
+	while(neul_bc95_get_netstat()<0);										//等待连接上网络
+	
+	{
+		#define RECV_BUF_LEN 1024
+		char *recvbuf = malloc(RECV_BUF_LEN);
+		
+		memset(recvbuf,0x0,RECV_BUF_LEN);
+		uart_data_write("AT\r\n", strlen("AT\r\n"), 0);
+		uart_data_read(recvbuf, RECV_BUF_LEN, 0, 200);
+		
+		memset(recvbuf,0x0,RECV_BUF_LEN);
+		uart_data_write("AE0\r\n", strlen("AE0\r\n"), 0);
+		uart_data_read(recvbuf, RECV_BUF_LEN, 0, 200);
+		
+		memset(recvbuf,0x0,RECV_BUF_LEN);
+		uart_data_write("AT+NCDP=180.101.147.115\r\n", strlen("AT+NCDP=180.101.147.115\r\n"), 0);
+		uart_data_read(recvbuf, RECV_BUF_LEN, 0, 200);
+		
+		memset(recvbuf,0x0,RECV_BUF_LEN);
+		
+		#define SEND_STR "AT+NMGS=257,0001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506\r\n"
+		uart_data_write(SEND_STR, strlen(SEND_STR), 0);
+		uart_data_read(recvbuf, RECV_BUF_LEN, 0, 5000);
+		
+	}
+	
+	//
+	printf("等待5000ms 进入 Standby 模式 \r\n");
+	utimer_sleep(5000);
+	//进入休眠
+	Sys_Enter_Standby();
+	
 	
 	
 	
