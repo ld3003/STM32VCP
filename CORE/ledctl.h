@@ -16,4 +16,7 @@ extern struct LED_CTRL_INFO LEDCTL[LEDCTL_COUNT];
 void init_led(void);
 void led_routing_func(void);
 
+#define LED_NETWORK_REGISTER_STATUS LEDCTL[0].ON_MS=500;LEDCTL[0].OFF_MS = 500;
+#define LED_NETWORK_ACTIVE_STATUS LEDCTL[0].ON_MS=300;LEDCTL[0].OFF_MS = 1000;
+
 #endif

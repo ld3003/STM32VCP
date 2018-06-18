@@ -4,6 +4,7 @@
 #include "BC95/neul_bc95.h"
 #include "BASE64/cbase64.h"
 #include "JSON/cjson.h"
+#include "ledctl.h"
 
 static int make_send_str(char *outstr , int outbuf_len ,char * instr)
 {
@@ -106,7 +107,7 @@ int main(void)
 	init_mem();
 	init_uart2_buffer();
 	
-	for(;;){};
+	LED_NETWORK_REGISTER_STATUS;
 	
 	while(neul_bc95_get_netstat()<0){};										//等待连接上网络
 	
@@ -157,8 +158,8 @@ int main(void)
 	
 	printf("Sys_Enter_Standby CurrentTim %d\r\n",RTC_GetCounter());
 	
-	RTC_SetAlarm(RTC_GetCounter() + 10);
-	utimer_sleep(1000);
+	RTC_SetAlarm(RTC_GetCounter() +  60);
+	utimer_sleep(100);
 	//进入休眠
 	Sys_Enter_Standby();
 

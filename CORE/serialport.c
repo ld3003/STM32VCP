@@ -25,24 +25,28 @@ int uart_data_read(char *buf, int maxrlen, int mode, int timeout)
 	int timeo = 0;
 	int history_rx_len = 0;
 	uart2_rx_buffer_index = 0;
+	#define DELAY_MS 20
 	for(;;)
 	{
 		
-		utimer_sleep(20);
+		utimer_sleep(DELAY_MS);
 		
-		if (uart2_rx_buffer_index > history_rx_len)
+		if (uart2_rx_buffer_index > 0)
 		{
-			history_rx_len = uart2_rx_buffer_index;
-			timeo = 0;
-		}else{
-			timeo += 20;
-			timeout = 40;
-		}
-		
-		if (uart2_rx_buffer_index >= maxrlen)
-		{
-			memcpy(buf,uart2_rx_buffer,uart2_rx_buffer_index);
-			goto ret;
+			if (uart2_rx_buffer_index > history_rx_len)
+			{
+				history_rx_len = uart2_rx_buffer_index;
+				timeo = 0;
+			}else{
+				timeo += DELAY_MS;
+				timeout = 40;
+			}
+			
+			if (uart2_rx_buffer_index >= maxrlen)
+			{
+				memcpy(buf,uart2_rx_buffer,uart2_rx_buffer_index);
+				goto ret;
+			}
 		}
 		
 		if (timeo >= timeout)

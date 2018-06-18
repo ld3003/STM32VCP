@@ -624,6 +624,11 @@
               <FileType>1</FileType>
               <FilePath>..\CORE\BASE64\cbase64.c</FilePath>
             </File>
+            <File>
+              <FileName>ledctl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\CORE\ledctl.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1313,6 +1318,11 @@
               <FileName>cbase64.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\CORE\BASE64\cbase64.c</FilePath>
+            </File>
+            <File>
+              <FileName>ledctl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\CORE\ledctl.c</FilePath>
             </File>
           </Files>
         </Group>

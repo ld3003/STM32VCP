@@ -29,7 +29,7 @@ void init_led(void)
 	LEDCTL[0].ctrl = led0_ctrl_func;
 	
 	LEDCTL[0].ON_MS = 0;
-	LEDCTL[0].OFF_MS = 1000;
+	LEDCTL[0].OFF_MS = 0;
 	
 }
 
