@@ -19,15 +19,12 @@ void init_uart2_buffer(void)
 	uart2_rx_buffer = (char*)alloc_mem(__FILE__,__LINE__,UART2_RX_BUF_LEN);
 }
 
-//static int uart_data_read(char *buf, int maxrlen, int mode)
+
 int uart_data_read(char *buf, int maxrlen, int mode, int timeout)
 {
 	int timeo = 0;
 	int history_rx_len = 0;
-	
-	
-	
-	
+	uart2_rx_buffer_index = 0;
 	for(;;)
 	{
 		
@@ -57,7 +54,7 @@ int uart_data_read(char *buf, int maxrlen, int mode, int timeout)
 	}
 	
 	ret:
-	printf("BC->ST : %s\r\n",buf);
+	printf("BC->ST : [%d] [%d] %s\r\n",uart2_rx_buffer_index,timeout,buf);
 	return uart2_rx_buffer_index;
 }
 //static int uart_data_write(const char *buf, int writelen, int mode)

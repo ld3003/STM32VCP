@@ -208,7 +208,7 @@ void watchdog_init(void)
 
 void led_ctrl(unsigned char index , unsigned char status)
 {
-	
+
 	//
 }
 
@@ -305,4 +305,6 @@ unsigned short read_vdd_voltage(void)
 	return vdd + 800;
 	
 }
+
+
 

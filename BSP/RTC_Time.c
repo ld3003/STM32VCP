@@ -436,7 +436,6 @@ void RTC_IRQHandler(void)
 	}
 	if(RTC_GetITStatus(RTC_IT_ALR)!= RESET)//ƒ÷÷”÷–∂œ
 	{
-		//RTC_SetAlarm(RTC_GetCounter() + 5);
 		printf("alarm .\r\n");
 	} 				  								 
 

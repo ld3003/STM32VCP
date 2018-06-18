@@ -93,9 +93,15 @@
 /*!< Uncomment the following line if you need to relocate your vector Table in
      Internal SRAM. */ 
 /* #define VECT_TAB_SRAM */
+
+#ifdef USE_BOOTLOADER
 #define VECT_TAB_OFFSET  0x5000 /*!< Vector Table base offset field. 
                                   This value must be a multiple of 0x100. */
-
+																	
+#else
+#define VECT_TAB_OFFSET  0x0000 /*!< Vector Table base offset field. 
+                                  This value must be a multiple of 0x100. */
+#endif
 
 /**
   * @}

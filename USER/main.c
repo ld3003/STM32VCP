@@ -1,33 +1,83 @@
-/****************************************Copyright (c)****************************************************
-**                                      
-**                                 http://www.powermcu.com
-**
-**--------------File Info---------------------------------------------------------------------------------
-** File name:               main.c
-** Descriptions:            The USART application function
-**
-**--------------------------------------------------------------------------------------------------------
-** Created by:              AVRman
-** Created date:            2010-10-30
-** Version:                 v1.0
-** Descriptions:            The original version
-**
-**--------------------------------------------------------------------------------------------------------
-** Modified by:             
-** Modified date:           
-** Version:                 
-** Descriptions:            
-**
-*********************************************************************************************************/
-
-/* Includes ------------------------------------------------------------------*/
 
 #include "main.h"
 #include "ov2640api.h"
 #include "BC95/neul_bc95.h"
 #include "BASE64/cbase64.h"
+#include "JSON/cjson.h"
 
-static void takephoto(void);
+static int make_send_str(char *outstr , int outbuf_len ,char * instr)
+{
+	int i=0;
+	extern int encode_base64(unsigned char * input , int inlen , char * output);
+	extern int decode_base64(const char * input , char * output , int * outlen);
+	extern int conv_hex_2_string(unsigned char *data , int datalen , char *str);
+	
+	memset(outstr,0x0,outbuf_len);
+	
+	char *b64buf = malloc(512);
+	char *hexbuf = malloc(512);
+	
+	//数据包长度为256
+	if (strlen(instr) <= 256)
+	{
+		for(i=strlen(instr);i<256;i++)
+		{
+			instr[i] = ' ';
+			//
+		}
+		instr[256] = 0x0;
+	}else{
+		instr[256] = 0x0;
+	}
+	
+	//encode_base64(inbuf,inbuf_len,b64buf);
+	//printf("BASE64: %s \r\n",b64buf);
+	snprintf((char *)outstr,outbuf_len,"AT+NMGS=%d,",257);
+	conv_hex_2_string((unsigned char*)instr,strlen(instr),hexbuf);
+	//printf("HEX BUF : %s ",hexbuf);
+	
+	strcat((char*)outstr,"00");
+	strcat((char*)outstr,hexbuf);
+	strcat((char*)outstr,"\r\n");
+	
+	free(b64buf);
+	free(hexbuf);
+	
+	
+	return strlen(outstr);
+}
+
+static int make_json_data(char *oustr)
+{
+	
+	char * p = 0;
+	cJSON * pJsonRoot = NULL;
+	char tmpstr[32];
+ 
+
+	pJsonRoot = cJSON_CreateObject();
+	if(NULL == pJsonRoot){return -1;}
+	
+	cJSON_AddNumberToObject(pJsonRoot, "version", 1);
+	cJSON_AddStringToObject(pJsonRoot, "ipaddress", "202.99.96.68");
+	cJSON_AddStringToObject(pJsonRoot, "ipport", "3000");
+	
+	p = cJSON_Print(pJsonRoot);
+	
+	if(NULL == p)
+	{
+		cJSON_Delete(pJsonRoot);
+		return -1;
+	}
+	cJSON_Delete(pJsonRoot);
+	
+	sprintf(oustr,"%s",p);
+	
+	printf("JSON:%s\r\n",oustr);
+	
+	free(p);
+	return 0;
+}
 
 /*******************************************************************************
 * Function Name  : main
@@ -42,7 +92,7 @@ int main(void)
 	
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);
 	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable,ENABLE);
-	
+	init_led();
 	SysTick_Config(SystemCoreClock / 100);
 	
 	init_uart1();
@@ -51,26 +101,38 @@ int main(void)
 	SET_BOOTLOADER_STATUS(2);
 	WKUP_Pin_Init();
 	
-	
 	init_utimer();
 	init_task();
-	mainloop_init();
 	init_mem();
 	init_uart2_buffer();
 	
-	//neul_bc95_reboot();																	//初始化模块
-	while(neul_bc95_get_netstat()<0);										//等待连接上网络
+	for(;;){};
+	
+	while(neul_bc95_get_netstat()<0){};										//等待连接上网络
 	
 	{
+		
+		/*
+		 * 分配内存
+		 */
 		#define RECV_BUF_LEN 1024
 		char *recvbuf = malloc(RECV_BUF_LEN);
+		char *atbuf = malloc(1024);
+		char *jsonbuf = malloc(512);
 		
+		/*
+		 * 发送AT指令
+		 */
 		memset(recvbuf,0x0,RECV_BUF_LEN);
 		uart_data_write("AT\r\n", strlen("AT\r\n"), 0);
 		uart_data_read(recvbuf, RECV_BUF_LEN, 0, 200);
 		
 		memset(recvbuf,0x0,RECV_BUF_LEN);
-		uart_data_write("AE0\r\n", strlen("AE0\r\n"), 0);
+		uart_data_write("ATE0\r\n", strlen("ATE0\r\n"), 0);
+		uart_data_read(recvbuf, RECV_BUF_LEN, 0, 200);
+		
+		memset(recvbuf,0x0,RECV_BUF_LEN);
+		uart_data_write("AT+CSQ\r\n", strlen("AT+CSQ\r\n"), 0);
 		uart_data_read(recvbuf, RECV_BUF_LEN, 0, 200);
 		
 		memset(recvbuf,0x0,RECV_BUF_LEN);
@@ -79,23 +141,27 @@ int main(void)
 		
 		memset(recvbuf,0x0,RECV_BUF_LEN);
 		
-		#define SEND_STR "AT+NMGS=257,0001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506\r\n"
-		uart_data_write(SEND_STR, strlen(SEND_STR), 0);
+		
+		make_json_data(jsonbuf);
+		make_send_str(atbuf,1024,jsonbuf);
+		uart_data_write(atbuf, strlen(atbuf), 0);
 		uart_data_read(recvbuf, RECV_BUF_LEN, 0, 5000);
 		
+		/*
+		释放内存
+		*/
+		free(recvbuf);
+		free(atbuf);
+		free(jsonbuf);
 	}
 	
-	//
-	printf("等待5000ms 进入 Standby 模式 \r\n");
-	utimer_sleep(5000);
+	printf("Sys_Enter_Standby CurrentTim %d\r\n",RTC_GetCounter());
+	
+	RTC_SetAlarm(RTC_GetCounter() + 10);
+	utimer_sleep(1000);
 	//进入休眠
 	Sys_Enter_Standby();
-	
-	
-	
-	
-	for(;;){feed_watchdog();mainloop();}
-	
+
 	return 0;
 }
 
