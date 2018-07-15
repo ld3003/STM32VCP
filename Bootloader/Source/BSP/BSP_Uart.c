@@ -76,7 +76,7 @@ void BSP_UART2Config(int baud)
   GPIO_Init(GPIOA, &GPIO_InitStructure);		   
 
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;	        
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;  
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;  
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; 
   GPIO_Init(GPIOA, &GPIO_InitStructure);
 
@@ -100,6 +100,37 @@ void BSP_UART2Config(int baud)
 	USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
  
 	USART_Cmd(USART2, ENABLE);//ê1?ü'??ú1
+
+
+	
+	//
+}
+
+
+void BSP_UART2ConfigOff(void)
+{
+	
+	GPIO_InitTypeDef GPIO_InitStructure;
+  USART_InitTypeDef USART_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+  RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOA ,ENABLE);
+	RCC_APB1PeriphClockCmd( RCC_APB1Periph_USART2 ,ENABLE);
+	
+	USART_Cmd(USART2, DISABLE);//ê1?ü'??ú1
+  /*
+  *  USART1_TX -> PA2 , USART1_RX ->	PA3
+  */				
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;	         
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN; 
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; 
+  GPIO_Init(GPIOA, &GPIO_InitStructure);		   
+
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;	        
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;  
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; 
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+
 
 
 	

@@ -15,7 +15,12 @@
 #define MODEM_POWER_RCC_TYPE	RCC_APB2PeriphClockCmd
 #define MODEM_POEWR_RCC				RCC_APB2Periph_GPIOB
 #define MODEM_POEWR_GPIO			GPIOB
-#define MODEM_POEWR_PIN				GPIO_Pin_10
+#define MODEM_POEWR_PIN				GPIO_Pin_12
+
+#define MODEM_RST_RCC_TYPE	RCC_APB2PeriphClockCmd
+#define MODEM_RST_RCC				RCC_APB2Periph_GPIOB
+#define MODEM_RST_GPIO			GPIOB
+#define MODEM_RST_PIN				GPIO_Pin_10
 
 #define OV_POWER_RCC_TYPE		RCC_APB2PeriphClockCmd
 #define OV_POEWR_RCC				RCC_APB2Periph_GPIOB
@@ -48,6 +53,9 @@ void uart2_putchar(unsigned char data);
 
 void modem_poweron(void);
 void modem_poweroff(void);
+
+void modem_reseton(void);
+void modem_resetoff(void);
 
 void ov_poweron(void);
 void ov_poweroff(void);

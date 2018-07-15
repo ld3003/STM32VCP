@@ -69,11 +69,11 @@ void init_uart2(void)
   GPIO_Init(GPIOA, &GPIO_InitStructure);		   
 
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;	        
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;  
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;  
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; 
   GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-  USART_InitStructure.USART_BaudRate = 9600;
+  USART_InitStructure.USART_BaudRate = 115200;
   USART_InitStructure.USART_WordLength = USART_WordLength_8b;
   USART_InitStructure.USART_StopBits = USART_StopBits_1;
   USART_InitStructure.USART_Parity = USART_Parity_No;
@@ -116,9 +116,67 @@ void uart2_putchar(unsigned char data)
 
 void modem_poweron(void)
 {
+	GPIO_InitTypeDef GPIO_InitStructure;
+
+  MODEM_POWER_RCC_TYPE( MODEM_POEWR_RCC , ENABLE); 						 
+  /**
+  *  LED1 -> PF6 , LED2 -> PF7 , LED3 -> PF8 , LED4 -> PF9
+  */					 
+  GPIO_InitStructure.GPIO_Pin =  MODEM_POEWR_PIN;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD; 
+  GPIO_Init(MODEM_POEWR_GPIO, &GPIO_InitStructure);
+	                             
+	GPIO_ResetBits(MODEM_POEWR_GPIO,MODEM_POEWR_PIN);
 }
 void modem_poweroff(void)
 {
+	
+	GPIO_InitTypeDef GPIO_InitStructure;
+
+  MODEM_POWER_RCC_TYPE( MODEM_POEWR_RCC , ENABLE); 						 
+  /**
+  *  LED1 -> PF6 , LED2 -> PF7 , LED3 -> PF8 , LED4 -> PF9
+  */					 
+  GPIO_InitStructure.GPIO_Pin =  MODEM_POEWR_PIN;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN; 
+  GPIO_Init(MODEM_POEWR_GPIO, &GPIO_InitStructure);
+	
+	GPIO_ResetBits(MODEM_POEWR_GPIO,MODEM_POEWR_PIN);
+}
+
+void modem_reseton(void)
+{
+	GPIO_InitTypeDef GPIO_InitStructure;
+
+  MODEM_RST_RCC_TYPE( MODEM_RST_RCC , ENABLE); 						 
+  /**
+  *  LED1 -> PF6 , LED2 -> PF7 , LED3 -> PF8 , LED4 -> PF9
+  */					 
+  GPIO_InitStructure.GPIO_Pin =  MODEM_RST_PIN;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD; 
+  GPIO_Init(MODEM_RST_GPIO, &GPIO_InitStructure);
+	                             
+	GPIO_ResetBits(MODEM_RST_GPIO,MODEM_RST_PIN);
+	//
+}
+void modem_resetoff(void)
+{
+	GPIO_InitTypeDef GPIO_InitStructure;
+
+  MODEM_POWER_RCC_TYPE( MODEM_RST_RCC , ENABLE); 						 
+  /**
+  *  LED1 -> PF6 , LED2 -> PF7 , LED3 -> PF8 , LED4 -> PF9
+  */					 
+  GPIO_InitStructure.GPIO_Pin =  MODEM_RST_PIN;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN; 
+  GPIO_Init(MODEM_RST_GPIO, &GPIO_InitStructure);
+	
+	GPIO_ResetBits(MODEM_RST_GPIO,MODEM_RST_PIN);
+	//
 }
 
 void ov_poweron(void)
@@ -190,6 +248,44 @@ void usben_off(void)
   GPIO_Init(USBEN_GPIO, &GPIO_InitStructure);
 	
 	//GPIO_ResetBits(LED0_GPIO,LED0_PIN);
+}
+
+
+void bc26_powerpin(unsigned char status)
+{
+	GPIO_InitTypeDef GPIO_InitStructure;
+
+	memset(&GPIO_InitStructure,0x0,sizeof(GPIO_InitStructure));
+	
+  RCC_APB2PeriphClockCmd( USBEN_RCC , ENABLE); 						 
+  /**
+  *  LED1 -> PF6 , LED2 -> PF7 , LED3 -> PF8 , LED4 -> PF9
+  */
+	
+	
+	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_12;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN; 
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+	GPIO_ResetBits(GPIOB,GPIO_Pin_12);
+	
+	return ;
+	
+	if (status == 0)
+	{
+		GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_12;
+		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 
+		GPIO_Init(GPIOB, &GPIO_InitStructure);
+		GPIO_ResetBits(GPIOB,GPIO_Pin_12);
+	}else{
+		GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_12;
+		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN; 
+		GPIO_Init(GPIOB, &GPIO_InitStructure);
+		GPIO_ResetBits(GPIOB,GPIO_Pin_12);
+	}
+	
 }
 
 void led0_fanzhuan(void)

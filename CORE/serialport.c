@@ -30,6 +30,7 @@ int uart_data_read(char *buf, int maxrlen, int mode, int timeout)
 	{
 		
 		utimer_sleep(DELAY_MS);
+		timeo += DELAY_MS;
 		
 		if (uart2_rx_buffer_index > 0)
 		{
@@ -38,7 +39,7 @@ int uart_data_read(char *buf, int maxrlen, int mode, int timeout)
 				history_rx_len = uart2_rx_buffer_index;
 				timeo = 0;
 			}else{
-				timeo += DELAY_MS;
+				
 				timeout = 40;
 			}
 			

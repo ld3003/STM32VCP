@@ -55,7 +55,8 @@ int main(void)
 	WKUP_Pin_Init();
 	
 	BSP_UART1Config(115200);
-	BSP_UART2Config(9600);
+	BSP_UART2Config(115200);
+	
 	
 	printf("Wakeup Bootloader ×´Ì¬ %d \r\n",GET_BOOTLOADER_STATUS);
 	
@@ -82,7 +83,9 @@ static void app(void)
 	usben_on();
 	USB_Config();
 	
-
+	
+	modem_poweron();
+		
 	while (1)
 	{
 		//Î¹¹·²Ù×÷

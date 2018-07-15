@@ -109,6 +109,34 @@ int main(void)
 	
 	LED_NETWORK_REGISTER_STATUS;
 	
+	while(1)
+	{
+		#define RECV_BUF_LEN 1024
+		char *recvbuf = malloc(RECV_BUF_LEN);
+		char *atbuf = malloc(1024);
+		char *jsonbuf = malloc(512);
+		
+		modem_poweron();
+		utimer_sleep(500);
+		modem_poweroff();
+		
+		memset(recvbuf,0x0,RECV_BUF_LEN);
+		uart_data_write("AT\r\n", strlen("AT\r\n"), 0);
+		uart_data_read(recvbuf, RECV_BUF_LEN, 0, 200);
+		
+		memset(recvbuf,0x0,RECV_BUF_LEN);
+		uart_data_write("AT+CSQ\r\n", strlen("AT+CSQ\r\n"), 0);
+		uart_data_read(recvbuf, RECV_BUF_LEN, 0, 200);
+		
+		
+		/*
+		释放内存
+		*/
+		free(recvbuf);
+		free(atbuf);
+		free(jsonbuf);
+	}
+	
 	while(neul_bc95_get_netstat()<0){};										//等待连接上网络
 	
 	{
