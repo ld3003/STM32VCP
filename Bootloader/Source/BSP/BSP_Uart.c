@@ -156,6 +156,10 @@ void UART1_Write_buffer(unsigned char * buffer, int length)
 void UART2_Write_buffer(unsigned char * buffer, int length)
 {
 	int i=0;
+	
+	extern unsigned int SysTickCnt;
+	extern unsigned int __UART_SEND_LED_TIM;
+	__UART_SEND_LED_TIM = SysTickCnt + 100;
 	for(i=0;i<length;i++)
 	{
 		

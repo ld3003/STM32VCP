@@ -19,6 +19,7 @@
 #ifndef _APP_H_
 #define _APP_H_
 
+extern unsigned int __UART_SEND_LED_TIM;
 void write_usb_buffer(unsigned char*buf , int len);
 void gotoApp(void);
 

@@ -12,12 +12,14 @@
 #include "bkpreg.h"
 #include "common.h"
 #include "standby.h"
+#include "ledctl.h"
 
 #define SERIALPORT		fputcmod = 0;
 #define USBPORT				fputcmod = 1;
 
-extern unsigned char enable_led_shanshuo;
-extern unsigned char led_shanshuo_pinlv;
+
+unsigned int __UART_SEND_LED_TIM = 0;
+
 
 static void process_atcmd(void);
 static void process_usbdata(void);
@@ -42,8 +44,6 @@ int main(void)
 	//关闭 SWD 调试
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);
 	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable,ENABLE);
-	
-	
 	
 	/*RCC SYSTICK RTC 初始化*/
 	RCC_GetClocksFreq(&rccClk);
@@ -73,8 +73,6 @@ static void app(void)
 	unsigned int tmpCnt;
 	int i=0;
 	
-	
-	
 	init_mem();
 	
 	/*Uart1 INIT*/
@@ -82,12 +80,17 @@ static void app(void)
 	
 	usben_on();
 	USB_Config();
-	
-	
+	init_led();
 	modem_poweron();
-		
 	while (1)
 	{
+		if (SysTickCnt > __UART_SEND_LED_TIM)
+		{
+			LED_TYPEA;
+		}else{
+			LED_TYPEB;
+		}
+		
 		//喂狗操作
 		feed_watchdog();
 		//处理USB 数据
@@ -133,7 +136,6 @@ static void process_usbdata(void)
 		
 		UART1_Write_buffer(buf,len);
 		UART2_Write_buffer(buf,len);
-		
 	}
 	
 }
