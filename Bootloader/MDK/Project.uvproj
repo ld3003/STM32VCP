@@ -716,6 +716,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\BSP\standby.c</FilePath>
             </File>
+            <File>
+              <FileName>ledctl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\CORE\ledctl.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
